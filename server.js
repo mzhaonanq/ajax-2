@@ -29,7 +29,7 @@ var server = http.createServer(function (request, response) {
     let string = fs.readFileSync("./public/index.html").toString()
     const page1 = fs.readFileSync("./database/page1.json").toString()
     const array = JSON.parse(page1)
-    const result = array.map((item)=>`<li>${item.id}<li>`).join('')
+    const result = array.map((item) => `<li>${item.id}</li>`).join("");
     string = string.replace("{{page1}}",`<ul id ="xxx">${result}<ul>`)
     response.write(string);
     response.end();
@@ -39,7 +39,7 @@ var server = http.createServer(function (request, response) {
     let string = fs.readFileSync("./public/index.html").toString()
     const page1 = fs.readFileSync("./database/page1.json").toString()
     const array = JSON.parse(page1)
-    const result = array.map(item=>`<li>${item.id}<li>`).join('')
+    const result = array.map(item=>`<li>${item.id}</li>`).join('')
     string = string.replace("{{page}}",`<ul>${result}<ul>`)
     response.write(string);
     response.end();
@@ -77,6 +77,16 @@ var server = http.createServer(function (request, response) {
     response.statusCode = 200;
     response.setHeader("Content-Type","text/json,charset=utf-8")
     response.write(fs.readFileSync("./database/page1.json"))
+    response.end()
+  }else if(path ==="/page2.json"){
+    response.statusCode = 200;
+    response.setHeader("Content-Type","text/json,charset=utf-8")
+    response.write(fs.readFileSync("./database/page2.json"))
+    response.end()
+  }else if(path ==="/page3.json"){
+    response.statusCode = 200;
+    response.setHeader("Content-Type","text/json,charset=utf-8")
+    response.write(fs.readFileSync("./database/page3.json"))
     response.end()
   }else {
     response.statusCode = 404;

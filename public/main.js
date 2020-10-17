@@ -82,16 +82,23 @@ getJson.onclick = () => {
   request.send();
 };
 
+let n = 2
 nextPage.onclick = () => {
   const request = new XMLHttpRequest();
-  request.open("GET", "/page1.json");
+  request.open("GET", `/page${n}.json`);
   request.onreadystatechange = () => {
     if (
       request.readyState === 4 &&
       (request.status >= 200) & (request.status < 300)
     ) {
-      console.log(request.response);
+      const array = JSON.parse(request.response)
+      array.forEach(item => {
+        const li = document.createElement("li")
+        li.innerText=item.id
+        xxx.appendChild(li)
+      })
     }
   };
+  n += 1
   request.send();
 };
