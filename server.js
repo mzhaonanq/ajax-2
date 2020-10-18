@@ -22,78 +22,44 @@ var server = http.createServer(function (request, response) {
   /******** 从这里开始看，上面不要看 ************/
 
   console.log("有个大聪明发请求过来啦！路径（带查询参数）为：" + pathWithQuery);
-
-  if (path === "/") {
-    response.statusCode = 200;
-    response.setHeader("Content-Type", "text/html;charset=utf-8");
-    let string = fs.readFileSync("./public/index.html").toString()
-    const page1 = fs.readFileSync("./database/page1.json").toString()
-    const array = JSON.parse(page1)
-    const result = array.map((item) => `<li>${item.id}</li>`).join("");
-    string = string.replace("{{page1}}",`<ul id ="xxx">${result}<ul>`)
-    response.write(string);
-    response.end();
-  } else if (path === "/index.html") {
-    response.statusCode = 200;
-    response.setHeader("Content-Type", "text/html;charset=utf-8");
-    let string = fs.readFileSync("./public/index.html").toString()
-    const page1 = fs.readFileSync("./database/page1.json").toString()
-    const array = JSON.parse(page1)
-    const result = array.map(item=>`<li>${item.id}</li>`).join('')
-    string = string.replace("{{page}}",`<ul>${result}<ul>`)
-    response.write(string);
-    response.end();
-  } else if (path === "/main.js") {
-    response.statusCode = 200;
-    response.setHeader("Content-Type", "text/javascript,charset=utf-8");
-    response.write(fs.readFileSync("./public/main.js"));
-    response.end();
-  } else if (path === "/style.css") {
-    response.statusCode = 200;
-    response.setHeader("Content-Type", "text/css;charset=utf-8");
-    response.write(fs.readFileSync("./public/style.css"));
-    response.end();
-  } else if (path === "/1.js") {
-    response.statusCode = 200;
-    response.setHeader("Content-Type", "text/javascript,charset=utf-8");
-    response.write(fs.readFileSync("public/1.js"));
-    response.end();
-  } else if (path === "/1.html") {
-    response.statusCode = 200;
-    response.setHeader("Content-Type", "text/html,charset=utf-8");
-    response.write(fs.readFileSync("./public/1.html"));
-    response.end();
-  } else if (path === "/1.xml") {
-    response.statusCode = 200;
-    response.setHeader("Content-Type", "text/xml,charset=utf-8");
-    response.write(fs.readFileSync("./public/1.xml"));
-    response.end();
-  }else if(path === "/1.json"){
-    response.statusCode =200;
-    response.setHeader("Content-Type","text/json,charset=utf-8")
-    response.write(fs.readFileSync("./public/1.json"))
-    response.end()
-  }else if(path ==="/page1.json"){
-    response.statusCode = 200;
-    response.setHeader("Content-Type","text/json,charset=utf-8")
-    response.write(fs.readFileSync("./database/page1.json"))
-    response.end()
-  }else if(path ==="/page2.json"){
-    response.statusCode = 200;
-    response.setHeader("Content-Type","text/json,charset=utf-8")
-    response.write(fs.readFileSync("./database/page2.json"))
-    response.end()
-  }else if(path ==="/page3.json"){
-    response.statusCode = 200;
-    response.setHeader("Content-Type","text/json,charset=utf-8")
-    response.write(fs.readFileSync("./database/page3.json"))
-    response.end()
-  }else {
+  response.statusCode = 200;
+  const filePath = path === "/" ? "/index.html" : path;
+  const index = filePath.lastIndexOf(".");
+  // suffix 是后缀
+  const suffix = filePath.substring(index);
+  const fileTypes = {
+    ".html": "text/html",
+    ".css": "text/css",
+    ".js": "text/javascript",
+    ".json": "text/json",
+    ".xml": "text/xml",
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+  };
+  response.setHeader(
+    "Content-Type",
+    `${fileTypes[suffix] || "text/html"};charset=utf-8`
+  );
+  let content;
+  try {
+    if (filePath === "/index.html") {
+      let string = fs.readFileSync(`./public${filePath}`).toString();
+      const page1 = fs.readFileSync("./database/page1.json").toString();
+      const array = JSON.parse(page1);
+      const result = array.map((item) => `<li>${item.id}</li>`).join("");
+      content = string.replace("{{page1}}", `<ul id ="xxx">${result}<ul>`);
+    } else if (suffix === ".json") {
+      content = fs.readFileSync(`./database${filePath}`);
+    } else {
+      content = fs.readFileSync(`./public${filePath}`);
+    }
+  } catch (error) {
+    content = "文件不存在";
     response.statusCode = 404;
-    response.setHeader("Content-Type", "text/html;charset=utf-8");
-    response.write("访问的页面不存在");
-    response.end();
   }
+  response.write(content);
+  response.end();
+
   /******** 代码结束，下面不要看 ************/
 });
 
